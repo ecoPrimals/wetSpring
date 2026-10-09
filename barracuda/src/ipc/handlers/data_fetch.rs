@@ -362,6 +362,8 @@ fn send_rpc(socket: &std::path::Path, request: &Value) -> Option<Value> {
     stream
         .set_read_timeout(Some(std::time::Duration::from_secs(10)))
         .ok();
+    // riboCipher signal prefix — required by ecosystem JSON-RPC servers
+    stream.write_all(&[0xEC, 0x01]).ok()?;
     let mut line = serde_json::to_string(request).ok()?;
     line.push('\n');
     stream.write_all(line.as_bytes()).ok()?;
